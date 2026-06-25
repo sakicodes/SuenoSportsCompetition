@@ -49,4 +49,19 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function competitionParticipants()
+    {
+        return $this->hasMany(CompetitionParticipant::class);
+    }
+
+    public function predictions()
+    {
+        return $this->hasMany(Prediction::class);
+    }
+
+    public function pointLedgers()
+    {
+        return $this->hasMany(UserPointsLedger::class);
+    }
 }
