@@ -17,4 +17,17 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+Route::middleware(['auth', AdminMiddleware::class])
+    ->prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        
+    // We will place all our Admin resource routes in here.
+    // For now, let's add a quick test route to verify the lock:
+    Route::get('/test', function () {
+        return 'Welcome to the Admin Sandbox!';
+    });
+
+});
+
 require __DIR__.'/auth.php';
