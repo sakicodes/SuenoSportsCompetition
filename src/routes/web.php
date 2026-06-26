@@ -2,6 +2,9 @@
 
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Middleware\AdminMiddleware;
+use App\Http\Controllers\Admin\TeamController;
+use App\Http\Controllers\Admin\CompetitionController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -18,16 +21,17 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', AdminMiddleware::class])
-    ->prefix('admin')
-    ->name('admin.')
-    ->group(function () {
-        
-    // We will place all our Admin resource routes in here.
-    // For now, let's add a quick test route to verify the lock:
-    Route::get('/test', function () {
-        return 'Welcome to the Admin Sandbox!';
-    });
+	->prefix('admin')
+	->name('admin.')
+	->group(function () {
+	    // Team Management Route
+	    Route::get('/teams', [TeamController::class, 'index'])->name('teams.index');
+	    Route::post('/teams', [TeamController::class, 'store'])->name('teams.store');
 
+	    // Competition Management Route
+	    Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
+	    Route::post('/competitions', [CompetitionController::class, 'store'])->name('competitions.store');
+	    Route::get('/competitions/{competition}', [CompetitionController::class, 'show'])->name('competitions.show');
 });
 
 require __DIR__.'/auth.php';
