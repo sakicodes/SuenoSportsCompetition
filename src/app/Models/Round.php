@@ -11,7 +11,7 @@ class Round extends Model
 		'name',
 		'sequence',
 		'prediction_cost',
-		'prediction_reward',
+		'prediction_multiplier',
 		'prediction_lock_datetime',
 		'locked',
 	];
@@ -20,7 +20,7 @@ class Round extends Model
 	{
 		return [
 			'prediction_cost' => 'integer',
-			'prediction_reward' => 'integer',
+			'prediction_multiplier' => 'integer',
 			'prediction_lock_datetime' => 'datetime',
 			'locked' => 'boolean',
 		];

@@ -17,7 +17,7 @@ return new class extends Migration
 		$table->string('name');
 		$table->integer('sequence');
 		$table->integer('prediction_cost')->nullable();
-		$table->integer('prediction_reward')->nullable();
+		$table->integer('prediction_multiplier')->nullable();
 		$table->dateTime('prediction_lock_datetime');
 		$table->boolean('locked')->default(false);
 		$table->timestamps();

@@ -15,7 +15,7 @@ class Competition extends Model
 		'description',
 		'status',
 		'default_prediction_cost',
-		'default_prediction_reward',
+		'default_prediction_multiplier',
 	];
 	
 	protected function casts(): array

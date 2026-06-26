@@ -17,7 +17,7 @@ return new class extends Migration
 		$table->text('description')->nullable();
 		$table->enum('status', ['OPEN', 'CLOSED', 'COMPLETED'])->default('OPEN');
 		$table->integer('default_prediction_cost')->default(1);
-		$table->integer('default_prediction_reward')->default(2);
+		$table->integer('default_prediction_multiplier')->default(2);
 		$table->timestamps();
 	});
     }
