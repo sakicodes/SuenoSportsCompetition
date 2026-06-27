@@ -45,4 +45,16 @@ Route::middleware(['auth', AdminMiddleware::class])
 	    Route::post('/users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
 });
 
+// ==========================================
+// PLAYER ROUTES (Requires Auth, but NOT Admin)
+// ==========================================
+Route::middleware(['auth'])->prefix('play')->name('player.')->group(function () {
+    
+    Route::get('/competitions', [\App\Http\Controllers\Player\CompetitionController::class, 'index'])->name('competitions.index');
+    Route::get('/competitions/{competition}', [\App\Http\Controllers\Player\CompetitionController::class, 'show'])->name('competitions.show');
+
+    // Prediction Route
+    Route::post('/matches/{match}/predictions', [\App\Http\Controllers\Player\PredictionController::class, 'store'])->name('predictions.store');
+});
+
 require __DIR__.'/auth.php';

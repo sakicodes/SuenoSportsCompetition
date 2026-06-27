@@ -88,9 +88,9 @@
                                 <p class="text-sm text-gray-600 mb-6">View active competitions, upcoming matches, and lock in your predictions.</p>
                             </div>
                             <!-- Phase 5 Link Placeholders -->
-                            <a href="#" class="text-center w-full px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 transition opacity-50 cursor-not-allowed">
-                                View Tournaments
-                            </a>
+			    <a href="{{ route('player.competitions.index') }}" class="text-center w-full px-4 py-2 bg-indigo-600 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-indigo-700 transition">
+				View Tournaments
+			    </a>
                         </div>
 
                         <!-- Leaderboard Card -->

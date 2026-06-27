@@ -24,4 +24,9 @@ class CompetitionService
         $data['status'] = 'OPEN';
         return $this->competitionRepository->create($data);
     }
+
+    public function getActiveCompetitions(): Collection
+    {
+        return $this->competitionRepository->getActive();
+    }
 }

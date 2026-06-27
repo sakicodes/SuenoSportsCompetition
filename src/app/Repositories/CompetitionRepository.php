@@ -16,4 +16,11 @@ class CompetitionRepository
     {
         return Competition::create($data);
     }
+
+    public function getActive(): Collection
+    {
+        return Competition::where('status', 'OPEN')
+            ->orderBy('created_at', 'desc')
+            ->get();
+    }
 }
