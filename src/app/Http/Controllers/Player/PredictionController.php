@@ -19,12 +19,12 @@ class PredictionController extends Controller
     public function store(Request $request, Matches $match)
     {
         $validated = $request->validate([
-            'predicted_winning_team_id' => 'required|exists:teams,id',
-            'points_wagered' => 'required|integer|min:1',
+            'predicted_team_id' => 'required|exists:teams,id',
+            'points_spent' => 'required|integer|min:1',
         ]);
 
-        if (!in_array($validated['predicted_winning_team_id'], [$match->home_team_id, $match->away_team_id])) {
-            return back()->withErrors(['predicted_winning_team_id' => 'Invalid team selection.']);
+        if (!in_array($validated['predicted_team_id'], [$match->home_team_id, $match->away_team_id])) {
+            return back()->withErrors(['predicted_team_id' => 'Invalid team selection.']);
         }
 
         try {
@@ -32,7 +32,7 @@ class PredictionController extends Controller
             return back()->with('success', 'Prediction and wager locked in successfully!');
         } catch (\Exception $e) {
             // Catch the 422 abort or any DB transaction errors
-            return back()->withErrors(['points_wagered' => $e->getMessage()]);
+            return back()->withErrors(['points_spent' => $e->getMessage()]);
         }
     }
 }

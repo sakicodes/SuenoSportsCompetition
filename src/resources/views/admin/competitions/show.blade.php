@@ -128,19 +128,53 @@
 			    <x-primary-button class="text-xs">{{ __('Save Match') }}</x-primary-button>
 			</div>
 		    </form>
-
-		    <div class="space-y-3">
+		   <div class="space-y-3">
 			@forelse($competition->matches->sortBy('match_datetime') as $match)
-			    <div class="p-3 border rounded-md flex justify-between items-center bg-white">
-				<div>
-				    <div class="text-xs text-indigo-600 font-bold mb-1">{{ optional($match->round)->name }}</div>
-				    <div class="font-medium text-gray-900">
-					{{ $match->homeTeam->name }} vs {{ $match->awayTeam->name }}
+			    <div class="p-4 border rounded-md bg-white shadow-sm flex flex-col">
+				
+                                <div class="flex justify-between items-start mb-2">
+				    <div>
+					<div class="text-xs text-indigo-600 font-bold mb-1">{{ optional($match->round)->name }}</div>
+					<div class="font-medium text-gray-900">
+					    {{ $match->homeTeam->name }} vs {{ $match->awayTeam->name }}
+					</div>
+					<div class="text-xs text-gray-500 mt-1">
+					    Kickoff: {{ $match->match_datetime->format('M j, Y H:i') }}
+					</div>
 				    </div>
-				    <div class="text-xs text-gray-500 mt-1">
-					Kickoff: {{ $match->match_datetime->format('M j, Y H:i') }} | Status: {{ $match->status }}
-				    </div>
+                                    <span class="px-2 py-1 text-[10px] font-bold rounded-full uppercase tracking-wider
+                                        {{ $match->status === 'COMPLETED' ? 'bg-green-100 text-green-800' : ($match->status === 'CANCELLED' ? 'bg-red-100 text-red-800' : 'bg-blue-100 text-blue-800') }}">
+                                        {{ $match->status }}
+                                    </span>
 				</div>
+
+                                @if(!in_array($match->status, ['COMPLETED', 'CANCELLED']))
+                                    <div class="mt-3 pt-3 border-t border-gray-100 space-y-2">
+                                        <form action="{{ route('admin.matches.resolve', $match) }}" method="POST" class="flex gap-2">
+                                            @csrf
+                                            <select name="winning_team_id" class="block w-full border-gray-300 focus:border-green-500 focus:ring-green-500 rounded-md shadow-sm text-xs" required>
+                                                <option value="" disabled selected>Select Winner...</option>
+                                                <option value="{{ $match->home_team_id }}">{{ $match->homeTeam->name }}</option>
+                                                <option value="{{ $match->away_team_id }}">{{ $match->awayTeam->name }}</option>
+                                            </select>
+                                            <button type="submit" class="bg-green-600 hover:bg-green-700 text-white font-bold py-1 px-3 rounded text-xs transition shadow-sm whitespace-nowrap">
+                                                Resolve
+                                            </button>
+                                        </form>
+
+                                        <form action="{{ route('admin.matches.cancel', $match) }}" method="POST" onsubmit="return confirm('Are you sure? This will refund all player wagers.');">
+                                            @csrf
+                                            <button type="submit" class="w-full bg-red-50 hover:bg-red-100 text-red-600 font-bold py-1 px-3 rounded text-[10px] uppercase tracking-wider transition border border-red-200">
+                                                Cancel Match & Refund
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <div class="mt-2 pt-2 border-t border-gray-100 text-[10px] text-gray-400 text-center uppercase tracking-widest">
+                                        Points Distributed
+                                    </div>
+                                @endif
+
 			    </div>
 			@empty
 			    <p class="text-sm text-gray-500 text-center py-4">No matches created yet.</p>

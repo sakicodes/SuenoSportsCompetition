@@ -35,32 +35,33 @@ class PredictionService
             if ($existingPrediction) {
                 // UPDATE: Allow team change, but ignore any new point wagers to prevent complex math
                 $existingPrediction->update([
-                    'predicted_winning_team_id' => $data['predicted_winning_team_id']
+                    'predicted_team_id' => $data['predicted_team_id']
                 ]);
                 return $existingPrediction;
             }
 
             // NEW WAGER: Balance Check
-            if ($data['points_wagered'] > $user->current_points) {
+            if ($data['points_spent'] > $user->current_points) {
                 abort(422, 'Insufficient points balance.');
             }
 
             // 3. Deduct Points & Save User
-            $user->current_points -= $data['points_wagered'];
+            $user->current_points -= $data['points_spent'];
             $user->save();
 
             // 4. Log the Ledger Transaction (Assuming your Phase 3 model)
-            $user->ledgers()->create([
-                'transaction_type' => 'WAGER_PLACED',
-                'points' => -$data['points_wagered'],
-                'description' => "Wager placed on Match ID: {$match->id}",
+            $user->pointLedgers()->create([
+                'transaction_type' => 'PREDICTION_COST',
+		'amount' => -$data['points_spent'],
+		'reference_type' => 'App\Models\Matches',
+                'reference_id' => $match->id,
+                'notes' => "Wager placed on Match ID: {$match->id}",
             ]);
 
             // 5. Create the Prediction
             $competition = $match->competition;
             $data['user_id'] = $user->id;
             $data['match_id'] = $match->id;
-            $data['potential_reward_multiplier'] = $round->prediction_multiplier ?? $competition->default_prediction_multiplier;
 
             return $this->predictionRepository->create($data);
 	});

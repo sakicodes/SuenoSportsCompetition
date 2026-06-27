@@ -38,6 +38,11 @@ class CompetitionController extends Controller
             'matches.awayTeam'
         ]);
 
-        return view('player.competitions.show', compact('competition'));
+	$userPredictions = auth()->user()->predictions()
+            ->whereIn('match_id', $competition->matches->pluck('id'))
+            ->get()
+            ->keyBy('match_id'); // Key them by match_id for easy lookup in Blade
+
+        return view('player.competitions.show', compact('competition', 'userPredictions'));
     }
 }

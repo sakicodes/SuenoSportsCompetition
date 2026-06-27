@@ -74,9 +74,20 @@
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ $user->name }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $user->username }}</td>
                                     <td class="px-6 py-4 whitespace-nowrap text-sm font-bold text-indigo-600">{{ $user->current_points }}</td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-400">
-                                        Manage
-                                    </td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">
+					    <form action="{{ route('admin.users.points', $user) }}" method="POST" class="flex items-center gap-2">
+						@csrf
+						<input type="hidden" name="description" value="Initial Account Funding">
+						
+						<div class="relative">
+						    <input type="number" name="amount" placeholder="Amount" class="block w-24 border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-xs px-2 py-1" required>
+						</div>
+						
+						<button type="submit" class="bg-indigo-100 hover:bg-indigo-200 text-indigo-700 font-bold py-1 px-3 rounded text-xs transition">
+						    Add Pts
+						</button>
+					    </form>
+					</td>
                                 </tr>
                             @empty
                                 <tr>

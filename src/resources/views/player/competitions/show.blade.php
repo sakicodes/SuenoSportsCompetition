@@ -58,24 +58,31 @@
                                         Kickoff: {{ \Carbon\Carbon::parse($match->match_datetime)->format('M j, Y @ H:i') }}
                                     </div>
                                 </div>
-
-                                @if(!$round->locked && now()->isBefore($round->prediction_lock_datetime))
+				@php
+                                    $existingPrediction = $userPredictions->get($match->id);
+                                @endphp
+				@if(!$round->locked && now()->isBefore($round->prediction_lock_datetime) && !in_array($match->status, ['COMPLETED', 'CLOSED', 'CANCELLED']))
                                     <form action="{{ route('player.predictions.store', $match) }}" method="POST" class="space-y-4">
                                         @csrf
                                         
                                         <div>
-                                            <x-input-label for="predicted_winning_team_id_{{ $match->id }}" value="Select Winner" class="text-xs uppercase text-gray-500 font-bold" />
-                                            <select name="predicted_winning_team_id" id="predicted_winning_team_id_{{ $match->id }}" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm" required>
-                                                <option value="" disabled selected>Who will win?</option>
-                                                <option value="{{ $match->home_team_id }}">{{ $match->homeTeam->name }}</option>
-                                                <option value="{{ $match->away_team_id }}">{{ $match->awayTeam->name }}</option>
+                                            <x-input-label for="predicted_team_id_{{ $match->id }}" value="Select Winner" class="text-xs uppercase text-gray-500 font-bold" />
+                                            <select name="predicted_team_id" id="predicted_team_id_{{ $match->id }}" class="mt-1 block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm" required>
+                                                <option value="" disabled {{ !$existingPrediction ? 'selected' : '' }}>Who will win?</option>
+                                                <option value="{{ $match->home_team_id }}" {{ $existingPrediction && $existingPrediction->predicted_team_id == $match->home_team_id ? 'selected' : '' }}>{{ $match->homeTeam->name }}</option>
+                                                <option value="{{ $match->away_team_id }}" {{ $existingPrediction && $existingPrediction->predicted_team_id == $match->away_team_id ? 'selected' : '' }}>{{ $match->awayTeam->name }}</option>
                                             </select>
                                         </div>
 
                                         <div>
-                                            <x-input-label for="points_wagered_{{ $match->id }}" value="Points to Wager" class="text-xs uppercase text-gray-500 font-bold" />
+                                            <x-input-label for="points_spent_{{ $match->id }}" value="Points to Wager" class="text-xs uppercase text-gray-500 font-bold" />
                                             <div class="relative mt-1">
-                                                <input type="number" name="points_wagered" id="points_wagered_{{ $match->id }}" min="1" max="{{ auth()->user()->current_points }}" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm pl-3 pr-12" placeholder="e.g., 50" required>
+                                                @if($existingPrediction)
+                                                    <input type="number" value="{{ $existingPrediction->points_spent }}" class="block w-full border-gray-300 bg-gray-100 text-gray-500 rounded-md shadow-sm text-sm pl-3 pr-12 cursor-not-allowed" disabled>
+                                                    <input type="hidden" name="points_spent" value="{{ $existingPrediction->points_spent }}">
+                                                @else
+                                                    <input type="number" name="points_spent" id="points_spent_{{ $match->id }}" min="1" max="{{ auth()->user()->current_points }}" class="block w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm pl-3 pr-12" placeholder="e.g., 50" required>
+                                                @endif
                                                 <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-xs text-gray-400 font-bold">
                                                     PTS
                                                 </div>
@@ -83,17 +90,52 @@
                                             <p class="text-[10px] text-gray-400 mt-1 text-right">Potential Return: Multiplier {{ $round->prediction_multiplier ?? $competition->default_prediction_multiplier }}x</p>
                                         </div>
 
-                                        <button type="submit" class="w-full bg-gray-900 hover:bg-black text-white font-bold py-2 px-4 rounded-md text-sm uppercase tracking-wider transition-colors shadow-sm">
-                                            Lock In Wager
+                                        <button type="submit" class="w-full {{ $existingPrediction ? 'bg-indigo-600 hover:bg-indigo-700' : 'bg-gray-900 hover:bg-black' }} text-white font-bold py-2 px-4 rounded-md text-sm uppercase tracking-wider transition-colors shadow-sm">
+                                            {{ $existingPrediction ? 'Update Prediction' : 'Lock In Wager' }}
                                         </button>
                                     </form>
                                 @else
-                                    <div class="text-center py-4 bg-gray-50 rounded-md border border-gray-200">
-                                        <p class="text-sm font-bold text-gray-500 uppercase">Match Locked</p>
-                                        <p class="text-xs text-gray-400 mt-1">Predictions are closed.</p>
+                                    <div class="text-center py-4 bg-gray-50 rounded-md border border-gray-200 flex flex-col items-center justify-center h-full">
+                                        @if($existingPrediction)
+                                            
+                                            @if(in_array($match->status, ['COMPLETED', 'CLOSED']))
+                                                <div class="mb-3">
+                                                    <span class="px-3 py-1 text-[10px] font-black rounded-full uppercase tracking-widest
+                                                        {{ $existingPrediction->status === 'CORRECT' ? 'bg-green-200 text-green-800' : 'bg-red-200 text-red-800' }}">
+                                                        {{ $existingPrediction->status }}
+                                                    </span>
+                                                </div>
+                                                <p class="text-[10px] text-gray-500 uppercase font-bold mb-1">Your Pick</p>
+                                                <div class="flex justify-center items-center gap-2 mb-2">
+                                                    <span class="font-bold text-gray-800">{{ $existingPrediction->predictedTeam->name }}</span>
+                                                    <span class="text-xs bg-gray-200 text-gray-700 px-2 py-0.5 rounded-full">{{ $existingPrediction->points_spent }} PTS</span>
+                                                </div>
+                                                
+                                                @if($existingPrediction->status === 'CORRECT')
+                                                    <p class="text-sm font-black text-green-600">+{{ $existingPrediction->points_awarded }} PTS WON!</p>
+                                                @else
+                                                    <p class="text-sm font-black text-red-500">0 PTS RETURN</p>
+                                                @endif
+
+                                            @elseif($match->status === 'CANCELLED')
+                                                <span class="px-2 py-1 text-[10px] font-bold rounded-full bg-gray-200 text-gray-800 uppercase tracking-wider mb-2">Cancelled</span>
+                                                <p class="text-xs text-gray-500">Wager Refunded</p>
+                                            
+                                            @else
+                                                <p class="text-xs text-gray-500 uppercase font-bold mb-1">Your Locked Wager</p>
+                                                <div class="flex justify-center items-center gap-2 mb-2">
+                                                    <span class="font-bold text-indigo-700">{{ $existingPrediction->predictedTeam->name }}</span>
+                                                    <span class="text-xs bg-indigo-100 text-indigo-800 px-2 py-0.5 rounded-full">{{ $existingPrediction->points_spent }} PTS</span>
+                                                </div>
+                                                <p class="text-[10px] text-gray-400">Awaiting match results...</p>
+                                            @endif
+
+                                        @else
+                                            <p class="text-sm font-bold text-gray-500 uppercase mb-1">Match Locked</p>
+                                            <p class="text-xs text-gray-400">You did not make a prediction.</p>
+                                        @endif
                                     </div>
                                 @endif
-
                             </div>
                         @empty
                             <div class="col-span-full text-center py-6 text-sm text-gray-500">

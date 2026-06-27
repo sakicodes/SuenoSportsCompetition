@@ -43,6 +43,11 @@ Route::middleware(['auth', AdminMiddleware::class])
 	    // User Management Route
 	    Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
 	    Route::post('/users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
+	    Route::post('/users/{user}/points', [App\Http\Controllers\Admin\UserController::class, 'adjustPoints'])->name('users.points');
+
+	    // Match Resolution Routes
+	    Route::post('/matches/{match}/resolve', [\App\Http\Controllers\Admin\MatchResolutionController::class, 'resolve'])->name('matches.resolve');
+	    Route::post('/matches/{match}/cancel', [\App\Http\Controllers\Admin\MatchResolutionController::class, 'cancel'])->name('matches.cancel');
 });
 
 // ==========================================

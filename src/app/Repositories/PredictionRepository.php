@@ -15,10 +15,10 @@ class PredictionRepository
                 'match_id' => $data['match_id'],
             ],
             [
-                'predicted_winning_team_id' => $data['predicted_winning_team_id'],
+                'predicted_team_id' => $data['predicted_team_id'],
                 // These points are locked in at the time of prediction, in case Admin changes default settings later
-                'points_wagered' => $data['points_wagered'],
-                'potential_reward_multiplier' => $data['potential_reward_multiplier'],
+                'points_spent' => $data['points_spent'],
+                'status' =>'PENDING',
             ]
         );
     }

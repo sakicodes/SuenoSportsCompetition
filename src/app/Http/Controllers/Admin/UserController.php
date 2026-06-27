@@ -33,4 +33,16 @@ class UserController extends Controller
 
         return redirect()->route('admin.users.index')->with('success', 'User created successfully!');
     }
+
+    public function adjustPoints(Request $request, \App\Models\User $user)
+    {
+        $validated = $request->validate([
+            'amount' => 'required|integer', // Can be positive (funding) or negative (penalty)
+            'description' => 'required|string|max:255',
+        ]);
+
+        $this->userService->adjustPoints($user, $validated['amount'], $validated['description']);
+
+        return back()->with('success', "Successfully adjusted points for {$user->name}.");
+    }
 }
