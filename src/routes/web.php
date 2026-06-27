@@ -6,6 +6,7 @@ use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\CompetitionController;
 use App\Http\Controllers\Admin\RoundController;
+use App\Http\Controllers\Player\LeaderboardController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -60,6 +61,10 @@ Route::middleware(['auth'])->prefix('play')->name('player.')->group(function () 
 
     // Prediction Route
     Route::post('/matches/{match}/predictions', [\App\Http\Controllers\Player\PredictionController::class, 'store'])->name('predictions.store');
+
+    //Leaderboard Route
+    Route::get('/leaderboard', [\App\Http\Controllers\Player\LeaderboardController::class, 'index'])->name('leaderboard.index');
+    Route::get('/leaderboard/{competition}', [\App\Http\Controllers\Player\LeaderboardController::class, 'competition'])->name('leaderboard.competition');
 });
 
 require __DIR__.'/auth.php';

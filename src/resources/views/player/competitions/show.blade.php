@@ -6,6 +6,9 @@
                     {{ $competition->name }}
                 </h2>
                 <p class="text-sm text-gray-600">{{ $competition->description }}</p>
+                <a href="{{ route('player.leaderboard.competition', $competition) }}" class="text-sm font-bold text-indigo-600 hover:text-indigo-800 underline">
+                     View Tournament Leaderboard →
+                </a>
             </div>
             <div class="bg-indigo-600 text-white px-4 py-2 rounded-lg shadow-sm border border-indigo-700 text-sm font-bold">
                 Available Wallet: {{ auth()->user()->current_points }} pts

@@ -100,7 +100,7 @@
                                 <p class="text-sm text-gray-600 mb-6">Check your rank against your friends and view the point ledger.</p>
                             </div>
                             <!-- Phase 6 Link Placeholders -->
-                            <a href="#" class="text-center w-full px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition opacity-50 cursor-not-allowed">
+                            <a href="{{ route('player.leaderboard.index') }}" class="text-center w-full px-4 py-2 bg-gray-800 border border-transparent rounded-md font-semibold text-xs text-white uppercase tracking-widest hover:bg-gray-900 transition">
                                 View Rankings
                             </a>
                         </div>
