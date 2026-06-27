@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Controllers\Admin\TeamController;
 use App\Http\Controllers\Admin\CompetitionController;
+use App\Http\Controllers\Admin\RoundController;
 
 Route::get('/', function () {
     return view('welcome');
@@ -32,6 +33,16 @@ Route::middleware(['auth', AdminMiddleware::class])
 	    Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
 	    Route::post('/competitions', [CompetitionController::class, 'store'])->name('competitions.store');
 	    Route::get('/competitions/{competition}', [CompetitionController::class, 'show'])->name('competitions.show');
+
+	    // Route Management Route
+	    Route::post('/competitions/{competition}/rounds', [RoundController::class, 'store'])->name('rounds.store');
+
+	    // Match Management Route
+	    Route::post('/competitions/{competition}/matches', [App\Http\Controllers\Admin\MatchController::class, 'store'])->name('matches.store');
+
+	    // User Management Route
+	    Route::get('/users', [App\Http\Controllers\Admin\UserController::class, 'index'])->name('users.index');
+	    Route::post('/users', [App\Http\Controllers\Admin\UserController::class, 'store'])->name('users.store');
 });
 
 require __DIR__.'/auth.php';

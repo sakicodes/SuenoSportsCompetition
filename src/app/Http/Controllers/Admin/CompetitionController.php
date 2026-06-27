@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Services\CompetitionService;
+use App\Services\TeamService;
 use Illuminate\Http\Request;
 
 class CompetitionController extends Controller
@@ -35,9 +36,20 @@ class CompetitionController extends Controller
         return redirect()->route('admin.competitions.index')->with('success', 'Competition created successfully!');
     }
 
-    public function show(\App\Models\Competition $competition)
+    public function show(\App\Models\Competition $competition, \App\Services\TeamService $teamService)
     {
-        // Later, we will use the Service layer to eagerly load the Rounds and Matches here
-        return view('admin.competitions.show', compact('competition'));
+        // Eager load rounds and matches
+        $competition->load([
+            'rounds' => function($query) {
+                $query->orderBy('sequence', 'asc');
+            },
+            'matches.homeTeam', 
+            'matches.awayTeam',
+            'matches.round'
+        ]);
+        
+        $teams = $teamService->getAllTeams();
+        
+        return view('admin.competitions.show', compact('competition', 'teams'));
     }
 }
