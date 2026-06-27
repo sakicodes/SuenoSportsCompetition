@@ -8,4 +8,13 @@ export default defineConfig({
             refresh: true,
         }),
     ],
+    server: {
+        host: '0.0.0.0', // Listen on all network interfaces
+        hmr: {
+            host: 'localhost' // Tell the browser to connect to localhost
+        },
+        watch: {
+            usePolling: true, // Crucial for Docker on Linux/WSL
+        }
+    }
 });
