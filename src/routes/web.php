@@ -9,7 +9,7 @@ use App\Http\Controllers\Admin\RoundController;
 use App\Http\Controllers\Player\LeaderboardController;
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect()->route('login');
 });
 
 Route::get('/dashboard', function () {
@@ -34,6 +34,7 @@ Route::middleware(['auth', AdminMiddleware::class])
 	    Route::get('/competitions', [CompetitionController::class, 'index'])->name('competitions.index');
 	    Route::post('/competitions', [CompetitionController::class, 'store'])->name('competitions.store');
 	    Route::get('/competitions/{competition}', [CompetitionController::class, 'show'])->name('competitions.show');
+	    Route::post('/competitions/{competition}/toggle-status', [CompetitionController::class, 'toggleStatus'])->name('competitions.toggle-status');
 
 	    // Route Management Route
 	    Route::post('/competitions/{competition}/rounds', [RoundController::class, 'store'])->name('rounds.store');

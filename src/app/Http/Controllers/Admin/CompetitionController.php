@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Services\CompetitionService;
 use App\Services\TeamService;
+use App\Models\Competition;
 use Illuminate\Http\Request;
 
 class CompetitionController extends Controller
@@ -52,4 +53,13 @@ class CompetitionController extends Controller
         
         return view('admin.competitions.show', compact('competition', 'teams'));
     }
+
+    public function toggleStatus(Competition $competition)
+	{
+	    // Toggle between OPEN and CLOSED
+	    $competition->status = ($competition->status === 'OPEN') ? 'CLOSED' : 'OPEN';
+	    $competition->save();
+
+	    return back()->with('success', "Tournament status updated to {$competition->status}!");
+	}
 }

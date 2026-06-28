@@ -1,12 +1,25 @@
 <x-app-layout>
     <x-slot name="header">
-        <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-                {{ $competition->name }} - {{ __('Dashboard') }}
-            </h2>
-            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                {{ $competition->status }}
-            </span>
+        <div class="flex justify-between items-center w-full">
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    {{ $competition->name }} - {{ __('Dashboard') }}
+                </h2>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full {{ $competition->status === 'OPEN' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800' }}">
+                    {{ $competition->status }}
+                </span>
+
+                <form action="{{ route('admin.competitions.toggle-status', $competition) }}" method="POST">
+                    @csrf
+                    <button type="submit" class="text-xs font-bold uppercase tracking-wider px-3 py-2 rounded-md border shadow-sm transition-colors
+                        {{ $competition->status === 'OPEN' ? 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100' : 'bg-green-50 text-green-600 border-green-200 hover:bg-green-100' }}">
+                        {{ $competition->status === 'OPEN' ? 'Close Tournament' : 'Open Tournament' }}
+                    </button>
+                </form>
+            </div>
         </div>
     </x-slot>
 
